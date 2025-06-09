@@ -1,73 +1,76 @@
-# Welcome to your Lovable project
+# Catálogo de Roupinhas da Mamãe
 
-## Project info
+Um catálogo digital moderno para visualização e gerenciamento de produtos de vestuário infantil.
 
-**URL**: https://lovable.dev/projects/f118fdf0-d8dc-4204-97e8-581c9ba434de
+## Tecnologias Utilizadas
 
-## How can I edit this code?
+- **React** - Biblioteca JavaScript para construção de interfaces
+- **TypeScript** - Superset tipado do JavaScript
+- **Vite** - Ferramenta de build rápida para desenvolvimento frontend
+- **Tailwind CSS** - Framework CSS utilitário
+- **Radix UI** - Componentes acessíveis e customizáveis
+- **React Router** - Roteamento para aplicações React
+- **React Hook Form** - Biblioteca para formulários performáticos
+- **Zod** - Validação de esquemas TypeScript
 
-There are several ways of editing your application.
+## Instalação e Execução
 
-**Use Lovable**
+### Pré-requisitos
+- Node.js (versão 18 ou superior)
+- npm ou yarn
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f118fdf0-d8dc-4204-97e8-581c9ba434de) and start prompting.
+### Instalação
+```bash
+# Clone o repositório
+git clone <url-do-repositorio>
 
-Changes made via Lovable will be committed automatically to this repo.
+# Entre na pasta do projeto
+cd roupinhas-da-mamae-catalogo
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Instale as dependências
+npm install
 ```
 
-**Edit a file directly in GitHub**
+### Execução
+```bash
+# Modo desenvolvimento
+npm run dev
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+# Build para produção
+npm run build
 
-**Use GitHub Codespaces**
+# Preview da build de produção
+npm run preview
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Linting
+npm run lint
+```
 
-## What technologies are used for this project?
+O aplicativo estará disponível em `http://localhost:8080`
 
-This project is built with:
+## Estrutura do Projeto
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+├── components/     # Componentes reutilizáveis
+├── pages/         # Páginas da aplicação
+├── lib/           # Utilitários e configurações
+├── hooks/         # Custom hooks
+└── types/         # Definições de tipos TypeScript
+```
 
-## How can I deploy this project?
+## Funcionalidades
 
-Simply open [Lovable](https://lovable.dev/projects/f118fdf0-d8dc-4204-97e8-581c9ba434de) and click on Share -> Publish.
+- Catálogo de produtos com visualização em grid/lista
+- Filtros por categoria, tamanho e preço
+- Sistema de busca
+- Visualização detalhada de produtos
+- Interface responsiva e acessível
 
-## Can I connect a custom domain to my Lovable project?
+## Contribuição
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
