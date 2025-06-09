@@ -1,98 +1,133 @@
 
 import { useState, useEffect } from 'react';
-import { ClothingItem } from '@/types/clothing';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-const STORAGE_KEY = 'clothing-catalog';
-
-// Dados de exemplo para começar
-const sampleData: ClothingItem[] = [
-  {
-    id: '1',
-    name: 'Blusa Floral Rosa',
-    category: 'blusa',
-    size: 'M',
-    color: 'Rosa',
-    price: 45.00,
-    description: 'Blusa floral delicada, perfeita para o verão',
-    status: 'available',
-    createdAt: new Date('2024-05-01'),
-  },
-  {
-    id: '2',
-    name: 'Calça Jeans Skinny',
-    category: 'calca',
-    size: 'G',
-    color: 'Azul',
-    price: 89.90,
-    description: 'Calça jeans de cintura alta, muito confortável',
-    status: 'available',
-    createdAt: new Date('2024-05-02'),
-  },
-  {
-    id: '3',
-    name: 'Vestido Midi Preto',
-    category: 'vestido',
-    size: 'P',
-    color: 'Preto',
-    price: 120.00,
-    description: 'Vestido elegante para ocasiões especiais',
-    status: 'sold',
-    createdAt: new Date('2024-04-28'),
-    soldAt: new Date('2024-05-05'),
-  },
-];
+export interface ClothingItem {
+  id: string;
+  name: string;
+  category: string;
+  size: string;
+  color: string;
+  price: number;
+  description?: string;
+  image_url?: string;
+  status: 'available' | 'sold';
+  created_at: string;
+  sold_at?: string;
+}
 
 export function useClothingStore() {
   const [items, setItems] = useState<ClothingItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  const fetchItems = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('clothing_items')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setItems(data || []);
+    } catch (error) {
+      console.error('Erro ao buscar itens:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível carregar os itens',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsedItems = JSON.parse(stored).map((item: any) => ({
-        ...item,
-        createdAt: new Date(item.createdAt),
-        soldAt: item.soldAt ? new Date(item.soldAt) : undefined,
-      }));
-      setItems(parsedItems);
-    } else {
-      setItems(sampleData);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleData));
-    }
+    fetchItems();
   }, []);
 
-  const saveToStorage = (newItems: ClothingItem[]) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newItems));
-    setItems(newItems);
+  const addItem = async (item: Omit<ClothingItem, 'id' | 'created_at'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('clothing_items')
+        .insert([item])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setItems(prev => [data, ...prev]);
+      toast({
+        title: 'Sucesso',
+        description: 'Item adicionado com sucesso',
+      });
+    } catch (error) {
+      console.error('Erro ao adicionar item:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível adicionar o item',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const addItem = (item: Omit<ClothingItem, 'id' | 'createdAt'>) => {
-    const newItem: ClothingItem = {
-      ...item,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-    };
-    const newItems = [...items, newItem];
-    saveToStorage(newItems);
+  const updateItem = async (id: string, updates: Partial<ClothingItem>) => {
+    try {
+      const { data, error } = await supabase
+        .from('clothing_items')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setItems(prev => prev.map(item => item.id === id ? data : item));
+      toast({
+        title: 'Sucesso',
+        description: 'Item atualizado com sucesso',
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar item:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível atualizar o item',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const updateItem = (id: string, updates: Partial<ClothingItem>) => {
-    const newItems = items.map(item => 
-      item.id === id ? { ...item, ...updates } : item
-    );
-    saveToStorage(newItems);
+  const markAsSold = async (id: string) => {
+    await updateItem(id, { status: 'sold', sold_at: new Date().toISOString() });
   };
 
-  const markAsSold = (id: string) => {
-    updateItem(id, { status: 'sold', soldAt: new Date() });
+  const markAsAvailable = async (id: string) => {
+    await updateItem(id, { status: 'available', sold_at: undefined });
   };
 
-  const markAsAvailable = (id: string) => {
-    updateItem(id, { status: 'available', soldAt: undefined });
-  };
+  const deleteItem = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('clothing_items')
+        .delete()
+        .eq('id', id);
 
-  const deleteItem = (id: string) => {
-    const newItems = items.filter(item => item.id !== id);
-    saveToStorage(newItems);
+      if (error) throw error;
+
+      setItems(prev => prev.filter(item => item.id !== id));
+      toast({
+        title: 'Sucesso',
+        description: 'Item removido com sucesso',
+      });
+    } catch (error) {
+      console.error('Erro ao remover item:', error);
+      toast({
+        title: 'Erro',
+        description: 'Não foi possível remover o item',
+        variant: 'destructive',
+      });
+    }
   };
 
   const getStats = () => {
@@ -112,11 +147,13 @@ export function useClothingStore() {
 
   return {
     items,
+    loading,
     addItem,
     updateItem,
     markAsSold,
     markAsAvailable,
     deleteItem,
     getStats,
+    refetch: fetchItems,
   };
 }

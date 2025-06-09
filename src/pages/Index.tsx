@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ClothingCard } from '@/components/ClothingCard';
@@ -5,11 +6,14 @@ import { ClothingFormDialog } from '@/components/ClothingFormDialog';
 import { ClothingFilters } from '@/components/ClothingFilters';
 import { StatsCard } from '@/components/StatsCard';
 import { useClothingStore } from '@/hooks/useClothingStore';
-import { Package, PackageCheck, Tag } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Package, PackageCheck, Tag, LogOut } from 'lucide-react';
 
 const Index = () => {
+  const { signOut } = useAuth();
   const {
     items,
+    loading,
     addItem,
     updateItem,
     markAsSold,
@@ -51,6 +55,21 @@ const Index = () => {
     }).format(value);
   };
 
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Carregando catálogo...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -65,13 +84,24 @@ const Index = () => {
                 Gerencie seu estoque de forma simples e eficiente
               </p>
             </div>
-            <Button 
-              onClick={() => setIsFormOpen(true)}
-              size="lg"
-              className="w-full sm:w-auto"
-            >
-              Cadastrar Nova Peça
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setIsFormOpen(true)}
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                Cadastrar Nova Peça
+              </Button>
+              <Button 
+                onClick={handleLogout}
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </Button>
+            </div>
           </div>
         </div>
       </div>
