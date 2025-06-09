@@ -31,6 +31,16 @@ export function ClothingCard({
     }).format(price);
   };
 
+  const getImageUrl = (imageUrl: string | null) => {
+    if (!imageUrl) return null;
+    
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+    
+    return `https://etysnilrceunntujuvby.supabase.co/storage/v1/object/public/clothing-images/${imageUrl}`;
+  };
+
   const handleStatusToggle = () => {
     if (item.status === 'available') {
       onMarkAsSold(item.id);
@@ -43,6 +53,18 @@ export function ClothingCard({
     <>
       <Card className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
         <CardHeader className="pb-3">
+          {item.image_url && (
+            <div className="aspect-square overflow-hidden rounded-lg mb-3">
+              <img
+                src={getImageUrl(item.image_url)}
+                alt={item.name}
+                className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <h3 className="font-semibold text-lg leading-tight">{item.name}</h3>

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ClothingItem, CLOTHING_CATEGORIES, CLOTHING_SIZES } from '@/types/clothing';
+import { ImageUpload } from './ImageUpload';
 
 interface ClothingFormDialogProps {
   open: boolean;
@@ -32,6 +33,7 @@ export function ClothingFormDialog({
     color: '',
     price: '',
     description: '',
+    image_url: '',
     status: 'available' as 'available' | 'sold',
   });
 
@@ -44,6 +46,7 @@ export function ClothingFormDialog({
         color: initialData.color,
         price: initialData.price.toString(),
         description: initialData.description || '',
+        image_url: initialData.image_url || '',
         status: initialData.status,
       });
     } else {
@@ -54,6 +57,7 @@ export function ClothingFormDialog({
         color: '',
         price: '',
         description: '',
+        image_url: '',
         status: 'available',
       });
     }
@@ -73,6 +77,7 @@ export function ClothingFormDialog({
       color: formData.color,
       price: parseFloat(formData.price),
       description: formData.description,
+      image_url: formData.image_url || undefined,
       status: formData.status,
       sold_at: formData.status === 'sold' ? new Date().toISOString() : undefined,
     });
@@ -85,14 +90,23 @@ export function ClothingFormDialog({
         color: '',
         price: '',
         description: '',
+        image_url: '',
         status: 'available',
       });
     }
   };
 
+  const handleImageUploaded = (imageUrl: string) => {
+    setFormData(prev => ({ ...prev, image_url: imageUrl }));
+  };
+
+  const handleImageRemoved = () => {
+    setFormData(prev => ({ ...prev, image_url: '' }));
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {mode === 'create' ? 'Cadastrar Nova Peça' : 'Editar Peça'}
@@ -100,92 +114,102 @@ export function ClothingFormDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome da Peça *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: Blusa Floral Rosa"
-                required
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome da Peça *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Ex: Blusa Floral Rosa"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Categoria *</Label>
+                <Select 
+                  value={formData.category} 
+                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLOTHING_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="size">Tamanho *</Label>
+                  <Select 
+                    value={formData.size} 
+                    onValueChange={(value) => setFormData({ ...formData, size: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Tam." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CLOTHING_SIZES.map((size) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="color">Cor *</Label>
+                  <Input
+                    id="color"
+                    value={formData.color}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    placeholder="Ex: Rosa"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="price">Preço (R$) *</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0,00"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Descrição</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Descrição opcional da peça..."
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <ImageUpload
+                onImageUploaded={handleImageUploaded}
+                currentImageUrl={formData.image_url}
+                onImageRemoved={handleImageRemoved}
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="category">Categoria *</Label>
-              <Select 
-                value={formData.category} 
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {CLOTHING_CATEGORIES.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="size">Tamanho *</Label>
-              <Select 
-                value={formData.size} 
-                onValueChange={(value) => setFormData({ ...formData, size: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Tam." />
-                </SelectTrigger>
-                <SelectContent>
-                  {CLOTHING_SIZES.map((size) => (
-                    <SelectItem key={size} value={size}>
-                      {size}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="color">Cor *</Label>
-              <Input
-                id="color"
-                value={formData.color}
-                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                placeholder="Ex: Rosa"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="price">Preço (R$) *</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0,00"
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Descrição</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Descrição opcional da peça..."
-              rows={3}
-            />
           </div>
 
           <div className="flex justify-between pt-4">
