@@ -112,9 +112,9 @@ export function ClothingCard({
             </Button>
           </div>
           
-          {item.soldAt && (
+          {item.sold_at && (
             <p className="text-xs text-muted-foreground">
-              Vendido em {item.soldAt.toLocaleDateString('pt-BR')}
+              Vendido em {new Date(item.sold_at).toLocaleDateString('pt-BR')}
             </p>
           )}
         </CardContent>

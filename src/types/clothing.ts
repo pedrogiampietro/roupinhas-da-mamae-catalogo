@@ -1,5 +1,17 @@
 
-export type { ClothingItem } from '@/hooks/useClothingStore';
+export interface ClothingItem {
+  id: string;
+  name: string;
+  category: string;
+  size: string;
+  color: string;
+  price: number;
+  description?: string;
+  image_url?: string;
+  status: 'available' | 'sold';
+  created_at: string;
+  sold_at?: string;
+}
 
 export type ClothingCategory = 
   | 'blusa'

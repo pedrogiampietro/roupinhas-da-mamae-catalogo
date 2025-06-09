@@ -2,20 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-export interface ClothingItem {
-  id: string;
-  name: string;
-  category: string;
-  size: string;
-  color: string;
-  price: number;
-  description?: string;
-  image_url?: string;
-  status: 'available' | 'sold';
-  created_at: string;
-  sold_at?: string;
-}
+import { ClothingItem } from '@/types/clothing';
 
 export function useClothingStore() {
   const [items, setItems] = useState<ClothingItem[]>([]);
@@ -30,7 +17,9 @@ export function useClothingStore() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setItems(data || []);
+      
+      // Type assertion para garantir que os dados do Supabase correspondem ao tipo ClothingItem
+      setItems((data as ClothingItem[]) || []);
     } catch (error) {
       console.error('Erro ao buscar itens:', error);
       toast({
@@ -57,7 +46,7 @@ export function useClothingStore() {
 
       if (error) throw error;
 
-      setItems(prev => [data, ...prev]);
+      setItems(prev => [data as ClothingItem, ...prev]);
       toast({
         title: 'Sucesso',
         description: 'Item adicionado com sucesso',
@@ -83,7 +72,7 @@ export function useClothingStore() {
 
       if (error) throw error;
 
-      setItems(prev => prev.map(item => item.id === id ? data : item));
+      setItems(prev => prev.map(item => item.id === id ? data as ClothingItem : item));
       toast({
         title: 'Sucesso',
         description: 'Item atualizado com sucesso',

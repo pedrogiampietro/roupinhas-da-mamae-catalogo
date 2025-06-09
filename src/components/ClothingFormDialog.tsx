@@ -11,7 +11,7 @@ import { ClothingItem, CLOTHING_CATEGORIES, CLOTHING_SIZES } from '@/types/cloth
 interface ClothingFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: Omit<ClothingItem, 'id' | 'createdAt'>) => void;
+  onSubmit: (data: Omit<ClothingItem, 'id' | 'created_at'>) => void;
   onDelete?: () => void;
   initialData?: ClothingItem;
   mode: 'create' | 'edit';
@@ -68,12 +68,13 @@ export function ClothingFormDialog({
 
     onSubmit({
       name: formData.name,
-      category: formData.category as any,
+      category: formData.category,
       size: formData.size,
       color: formData.color,
       price: parseFloat(formData.price),
       description: formData.description,
       status: formData.status,
+      sold_at: formData.status === 'sold' ? new Date().toISOString() : undefined,
     });
 
     if (mode === 'create') {
