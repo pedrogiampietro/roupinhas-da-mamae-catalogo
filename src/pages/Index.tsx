@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ClothingCard } from '@/components/ClothingCard';
@@ -33,8 +32,8 @@ const Index = () => {
       item.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     
-    const matchesCategory = !categoryFilter || item.category === categoryFilter;
-    const matchesStatus = !statusFilter || item.status === statusFilter;
+    const matchesCategory = !categoryFilter || categoryFilter === 'all' || item.category === categoryFilter;
+    const matchesStatus = !statusFilter || statusFilter === 'all' || item.status === statusFilter;
 
     return matchesSearch && matchesCategory && matchesStatus;
   });
