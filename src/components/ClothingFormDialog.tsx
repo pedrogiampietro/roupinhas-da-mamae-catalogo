@@ -32,7 +32,7 @@ export function ClothingFormDialog({
     color: '',
     price: '',
     description: '',
-    status: 'available' as const,
+    status: 'available' as 'available' | 'sold',
   });
 
   useEffect(() => {
