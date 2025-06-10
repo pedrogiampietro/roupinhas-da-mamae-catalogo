@@ -21,10 +21,10 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/catalog" element={<Catalog />} />
+            <Route path="/" element={<Catalog />} />
             <Route path="/login" element={<Login />} />
             <Route 
-              path="/" 
+              path="/admin" 
               element={
                 <ProtectedRoute>
                   <Index />

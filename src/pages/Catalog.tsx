@@ -95,7 +95,7 @@ const Catalog = () => {
               </p>
             </div>
             <Button 
-              onClick={() => window.location.href = '/login'}
+              onClick={() => window.location.href = '/admin'}
               size="lg"
               className="w-full sm:w-auto"
             >
