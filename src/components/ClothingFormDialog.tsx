@@ -12,7 +12,7 @@ import { ImageUpload } from './ImageUpload';
 interface ClothingFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: Omit<ClothingItem, 'id' | 'created_at'>) => void;
+  onSubmit: (data: Omit<ClothingItem, 'id' | 'created_at' | 'code'>) => void;
   onDelete?: () => void;
   initialData?: ClothingItem;
   mode: 'create' | 'edit';
