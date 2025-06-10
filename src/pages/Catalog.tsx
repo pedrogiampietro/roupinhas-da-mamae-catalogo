@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ClothingItem } from '@/types/clothing';
 import { ClothingFilters } from '@/components/ClothingFilters';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { ClothingCard } from '@/components/ClothingCard';
 import { Button } from '@/components/ui/button';
 import { Package, ShoppingBag } from 'lucide-react';
 
@@ -40,29 +39,13 @@ const Catalog = () => {
     const matchesSearch = 
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     
     const matchesCategory = !categoryFilter || categoryFilter === 'all' || item.category === categoryFilter;
 
     return matchesSearch && matchesCategory;
   });
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(price);
-  };
-
-  const getImageUrl = (imageUrl: string | null) => {
-    if (!imageUrl) return null;
-    
-    if (imageUrl.startsWith('http')) {
-      return imageUrl;
-    }
-    
-    return `https://etysnilrceunntujuvby.supabase.co/storage/v1/object/public/clothing-images/${imageUrl}`;
-  };
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -124,58 +107,15 @@ const Catalog = () => {
         {filteredItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => (
-              <Card key={item.id} className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
-                <CardHeader className="pb-3">
-                  {item.image_url && (
-                    <div className="aspect-square overflow-hidden rounded-lg mb-3">
-                      <img
-                        src={getImageUrl(item.image_url)}
-                        alt={item.name}
-                        className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-                  <div className="space-y-1">
-                    <h3 className="font-semibold text-lg leading-tight">{item.name}</h3>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {item.category}
-                      </Badge>
-                      <Badge variant="default" className="text-xs">
-                        Disponível
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">Tamanho:</span>
-                      <span className="ml-1 font-medium">{item.size}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Cor:</span>
-                      <span className="ml-1 font-medium">{item.color}</span>
-                    </div>
-                  </div>
-                  
-                  {item.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {item.description}
-                    </p>
-                  )}
-                  
-                  <div className="pt-2">
-                    <span className="text-2xl font-bold text-primary">
-                      {formatPrice(item.price)}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+              <ClothingCard
+                key={item.id}
+                item={item}
+                onMarkAsSold={() => {}}
+                onMarkAsAvailable={() => {}}
+                onUpdate={() => {}}
+                onDelete={() => {}}
+                showWhatsApp={true}
+              />
             ))}
           </div>
         ) : (

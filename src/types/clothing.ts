@@ -1,6 +1,7 @@
 
 export interface ClothingItem {
   id: string;
+  code: string;
   name: string;
   category: string;
   size: string;

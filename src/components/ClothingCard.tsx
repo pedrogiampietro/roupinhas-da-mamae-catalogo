@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ClothingItem } from '@/types/clothing';
-import { Package, PackageCheck, Edit } from 'lucide-react';
+import { Package, PackageCheck, Edit, MessageCircle } from 'lucide-react';
 import { ClothingFormDialog } from './ClothingFormDialog';
 
 interface ClothingCardProps {
@@ -13,6 +13,7 @@ interface ClothingCardProps {
   onMarkAsAvailable: (id: string) => void;
   onUpdate: (id: string, updates: Partial<ClothingItem>) => void;
   onDelete: (id: string) => void;
+  showWhatsApp?: boolean;
 }
 
 export function ClothingCard({ 
@@ -20,7 +21,8 @@ export function ClothingCard({
   onMarkAsSold, 
   onMarkAsAvailable, 
   onUpdate, 
-  onDelete 
+  onDelete,
+  showWhatsApp = false
 }: ClothingCardProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -49,6 +51,14 @@ export function ClothingCard({
     }
   };
 
+  const handleWhatsAppClick = () => {
+    const phoneNumber = '5541988785871';
+    const message = `Olá, tenho interesse na roupa ${item.code}`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <>
       <Card className="group hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
@@ -67,6 +77,11 @@ export function ClothingCard({
           )}
           <div className="flex items-start justify-between">
             <div className="space-y-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Badge variant="outline" className="text-xs font-mono">
+                  {item.code}
+                </Badge>
+              </div>
               <h3 className="font-semibold text-lg leading-tight">{item.name}</h3>
               <div className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-xs">
@@ -80,14 +95,16 @@ export function ClothingCard({
                 </Badge>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsEditOpen(true)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
+            {!showWhatsApp && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditOpen(true)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </CardHeader>
         
@@ -114,24 +131,36 @@ export function ClothingCard({
               {formatPrice(item.price)}
             </span>
             
-            <Button
-              onClick={handleStatusToggle}
-              variant={item.status === 'available' ? 'default' : 'outline'}
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              {item.status === 'available' ? (
-                <>
-                  <PackageCheck className="h-4 w-4" />
-                  Marcar Vendido
-                </>
-              ) : (
-                <>
-                  <Package className="h-4 w-4" />
-                  Marcar Disponível
-                </>
-              )}
-            </Button>
+            {showWhatsApp ? (
+              <Button
+                onClick={handleWhatsAppClick}
+                variant="default"
+                size="sm"
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </Button>
+            ) : (
+              <Button
+                onClick={handleStatusToggle}
+                variant={item.status === 'available' ? 'default' : 'outline'}
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                {item.status === 'available' ? (
+                  <>
+                    <PackageCheck className="h-4 w-4" />
+                    Marcar Vendido
+                  </>
+                ) : (
+                  <>
+                    <Package className="h-4 w-4" />
+                    Marcar Disponível
+                  </>
+                )}
+              </Button>
+            )}
           </div>
           
           {item.sold_at && (
@@ -142,20 +171,22 @@ export function ClothingCard({
         </CardContent>
       </Card>
 
-      <ClothingFormDialog
-        open={isEditOpen}
-        onOpenChange={setIsEditOpen}
-        onSubmit={(data) => {
-          onUpdate(item.id, data);
-          setIsEditOpen(false);
-        }}
-        onDelete={() => {
-          onDelete(item.id);
-          setIsEditOpen(false);
-        }}
-        initialData={item}
-        mode="edit"
-      />
+      {!showWhatsApp && (
+        <ClothingFormDialog
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+          onSubmit={(data) => {
+            onUpdate(item.id, data);
+            setIsEditOpen(false);
+          }}
+          onDelete={() => {
+            onDelete(item.id);
+            setIsEditOpen(false);
+          }}
+          initialData={item}
+          mode="edit"
+        />
+      )}
     </>
   );
 }
