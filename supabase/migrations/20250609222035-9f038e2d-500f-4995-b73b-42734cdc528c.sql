@@ -1,4 +1,3 @@
-
 -- Criar tabela para itens de roupa
 CREATE TABLE public.clothing_items (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -17,13 +16,20 @@ CREATE TABLE public.clothing_items (
 -- Habilitar RLS
 ALTER TABLE public.clothing_items ENABLE ROW LEVEL SECURITY;
 
--- Política para permitir acesso apenas a usuários autenticados
+-- Política para permitir acesso apenas a usuários autenticados (gerenciamento completo)
 CREATE POLICY "Authenticated users can manage clothing items" 
   ON public.clothing_items 
   FOR ALL 
   TO authenticated 
   USING (true) 
   WITH CHECK (true);
+
+-- Política para permitir acesso público de leitura apenas para itens disponíveis
+CREATE POLICY "Public can view available clothing items" 
+  ON public.clothing_items 
+  FOR SELECT 
+  TO anon 
+  USING (status = 'available');
 
 -- Inserir usuário admin padrão (senha será 'admin123')
 INSERT INTO auth.users (
