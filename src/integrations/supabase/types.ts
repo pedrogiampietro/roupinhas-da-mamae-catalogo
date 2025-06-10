@@ -12,6 +12,7 @@ export type Database = {
       clothing_items: {
         Row: {
           category: string
+          code: string
           color: string
           created_at: string
           description: string | null
@@ -25,6 +26,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          code: string
           color: string
           created_at?: string
           description?: string | null
@@ -38,6 +40,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          code?: string
           color?: string
           created_at?: string
           description?: string | null

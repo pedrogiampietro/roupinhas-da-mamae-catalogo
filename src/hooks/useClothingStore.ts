@@ -36,22 +36,11 @@ export function useClothingStore() {
     fetchItems();
   }, []);
 
-  const generateCode = () => {
-    const prefix = 'ROU';
-    const timestamp = Date.now().toString().slice(-6);
-    return `${prefix}${timestamp}`;
-  };
-
-  const addItem = async (item: Omit<ClothingItem, 'id' | 'created_at' | 'code'>) => {
+  const addItem = async (item: Omit<ClothingItem, 'id' | 'created_at'>) => {
     try {
-      const itemWithCode = {
-        ...item,
-        code: generateCode()
-      };
-
       const { data, error } = await supabase
         .from('clothing_items')
-        .insert([itemWithCode])
+        .insert([item])
         .select()
         .single();
 

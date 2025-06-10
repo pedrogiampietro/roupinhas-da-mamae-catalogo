@@ -12,7 +12,7 @@ import { ImageUpload } from './ImageUpload';
 interface ClothingFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: Omit<ClothingItem, 'id' | 'created_at' | 'code'>) => void;
+  onSubmit: (data: Omit<ClothingItem, 'id' | 'created_at'>) => void;
   onDelete?: () => void;
   initialData?: ClothingItem;
   mode: 'create' | 'edit';
@@ -34,8 +34,15 @@ export function ClothingFormDialog({
     price: '',
     description: '',
     image_url: '',
+    code: '',
     status: 'available' as 'available' | 'sold',
   });
+
+  const generateCode = () => {
+    const prefix = 'ROU';
+    const timestamp = Date.now().toString().slice(-6);
+    return `${prefix}${timestamp}`;
+  };
 
   useEffect(() => {
     if (initialData && mode === 'edit') {
@@ -47,6 +54,7 @@ export function ClothingFormDialog({
         price: initialData.price.toString(),
         description: initialData.description || '',
         image_url: initialData.image_url || '',
+        code: initialData.code,
         status: initialData.status,
       });
     } else {
@@ -58,6 +66,7 @@ export function ClothingFormDialog({
         price: '',
         description: '',
         image_url: '',
+        code: generateCode(),
         status: 'available',
       });
     }
@@ -66,7 +75,7 @@ export function ClothingFormDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.category || !formData.size || !formData.color || !formData.price) {
+    if (!formData.name || !formData.category || !formData.size || !formData.color || !formData.price || !formData.code) {
       return;
     }
 
@@ -78,6 +87,7 @@ export function ClothingFormDialog({
       price: parseFloat(formData.price),
       description: formData.description,
       image_url: formData.image_url || undefined,
+      code: formData.code,
       status: formData.status,
       sold_at: formData.status === 'sold' ? new Date().toISOString() : undefined,
     });
@@ -91,6 +101,7 @@ export function ClothingFormDialog({
         price: '',
         description: '',
         image_url: '',
+        code: generateCode(),
         status: 'available',
       });
     }
@@ -102,6 +113,10 @@ export function ClothingFormDialog({
 
   const handleImageRemoved = () => {
     setFormData(prev => ({ ...prev, image_url: '' }));
+  };
+
+  const handleGenerateNewCode = () => {
+    setFormData(prev => ({ ...prev, code: generateCode() }));
   };
 
   return (
@@ -116,6 +131,28 @@ export function ClothingFormDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="code">Código da Peça *</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="code"
+                    value={formData.code}
+                    onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                    placeholder="Ex: ROU123456"
+                    required
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleGenerateNewCode}
+                    className="px-3"
+                  >
+                    Gerar
+                  </Button>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="name">Nome da Peça *</Label>
                 <Input
