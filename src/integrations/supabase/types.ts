@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       clothing_items: {
         Row: {
+          buyer_name: string | null
           category: string
           code: string
           color: string
@@ -19,12 +20,15 @@ export type Database = {
           id: string
           image_url: string | null
           name: string
+          payment_method: string | null
+          payment_status: string | null
           price: number
           size: string
           sold_at: string | null
           status: string
         }
         Insert: {
+          buyer_name?: string | null
           category: string
           code: string
           color: string
@@ -33,12 +37,15 @@ export type Database = {
           id?: string
           image_url?: string | null
           name: string
+          payment_method?: string | null
+          payment_status?: string | null
           price: number
           size: string
           sold_at?: string | null
           status?: string
         }
         Update: {
+          buyer_name?: string | null
           category?: string
           code?: string
           color?: string
@@ -47,6 +54,8 @@ export type Database = {
           id?: string
           image_url?: string | null
           name?: string
+          payment_method?: string | null
+          payment_status?: string | null
           price?: number
           size?: string
           sold_at?: string | null

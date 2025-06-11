@@ -87,12 +87,33 @@ export function useClothingStore() {
     }
   };
 
-  const markAsSold = async (id: string) => {
-    await updateItem(id, { status: 'sold', sold_at: new Date().toISOString() });
+  const markAsSold = async (id: string, saleData?: {
+    buyerName: string;
+    paymentMethod: string;
+    paymentStatus: 'paid' | 'pending';
+  }) => {
+    const updates: Partial<ClothingItem> = {
+      status: 'sold',
+      sold_at: new Date().toISOString(),
+    };
+
+    if (saleData) {
+      updates.buyer_name = saleData.buyerName;
+      updates.payment_method = saleData.paymentMethod;
+      updates.payment_status = saleData.paymentStatus;
+    }
+
+    await updateItem(id, updates);
   };
 
   const markAsAvailable = async (id: string) => {
-    await updateItem(id, { status: 'available', sold_at: undefined });
+    await updateItem(id, { 
+      status: 'available', 
+      sold_at: undefined,
+      buyer_name: undefined,
+      payment_method: undefined,
+      payment_status: undefined,
+    });
   };
 
   const deleteItem = async (id: string) => {

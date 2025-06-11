@@ -12,6 +12,9 @@ export interface ClothingItem {
   status: 'available' | 'sold';
   created_at: string;
   sold_at?: string;
+  buyer_name?: string;
+  payment_method?: string;
+  payment_status?: 'paid' | 'pending';
 }
 
 export type ClothingCategory = 
