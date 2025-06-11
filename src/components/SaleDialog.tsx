@@ -23,6 +23,7 @@ export function SaleDialog({ open, onOpenChange, item, onConfirmSale }: SaleDial
   const [formData, setFormData] = useState({
     buyerName: '',
     paymentMethod: '',
+    customPaymentMethod: '',
     paymentStatus: 'pending' as 'paid' | 'pending',
   });
 
@@ -40,12 +41,22 @@ export function SaleDialog({ open, onOpenChange, item, onConfirmSale }: SaleDial
       return;
     }
 
-    onConfirmSale(formData);
+    // Use custom payment method if "outros" is selected and custom method is provided
+    const finalPaymentMethod = formData.paymentMethod === 'outros' && formData.customPaymentMethod
+      ? formData.customPaymentMethod
+      : formData.paymentMethod;
+
+    onConfirmSale({
+      buyerName: formData.buyerName,
+      paymentMethod: finalPaymentMethod,
+      paymentStatus: formData.paymentStatus,
+    });
     
     // Reset form
     setFormData({
       buyerName: '',
       paymentMethod: '',
+      customPaymentMethod: '',
       paymentStatus: 'pending',
     });
   };
@@ -56,6 +67,7 @@ export function SaleDialog({ open, onOpenChange, item, onConfirmSale }: SaleDial
     setFormData({
       buyerName: '',
       paymentMethod: '',
+      customPaymentMethod: '',
       paymentStatus: 'pending',
     });
   };
@@ -105,7 +117,7 @@ export function SaleDialog({ open, onOpenChange, item, onConfirmSale }: SaleDial
               <Label htmlFor="paymentMethod">Forma de Pagamento *</Label>
               <Select 
                 value={formData.paymentMethod} 
-                onValueChange={(value) => setFormData({ ...formData, paymentMethod: value })}
+                onValueChange={(value) => setFormData({ ...formData, paymentMethod: value, customPaymentMethod: '' })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione..." />
@@ -120,6 +132,20 @@ export function SaleDialog({ open, onOpenChange, item, onConfirmSale }: SaleDial
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Campo personalizado quando "Outros" é selecionado */}
+            {formData.paymentMethod === 'outros' && (
+              <div className="space-y-2">
+                <Label htmlFor="customPaymentMethod">Especificar Forma de Pagamento *</Label>
+                <Input
+                  id="customPaymentMethod"
+                  value={formData.customPaymentMethod}
+                  onChange={(e) => setFormData({ ...formData, customPaymentMethod: e.target.value })}
+                  placeholder="Ex: Parcelado na mão, Cheque, etc."
+                  required
+                />
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="paymentStatus">Status do Pagamento *</Label>
